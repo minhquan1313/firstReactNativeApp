@@ -32,7 +32,7 @@ export default function App() {
 
         console.log(`Adding samples`);
 
-        for (let i = 0; i < 2; i++) {
+        for (let i = 0; i < 22; i++) {
             newGoal(`Sample ${i}`);
         }
     }, []);

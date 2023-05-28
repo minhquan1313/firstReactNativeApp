@@ -1,14 +1,21 @@
 import { IGoal } from "App";
-import { memo } from "react";
+import { memo, useCallback } from "react";
 import { StyleSheet } from "react-native";
 import MyButton from "../MyButton";
 
 export interface IGItemProps {
+    index?: number;
     onPress: (id: number) => void;
 }
-const GoalItem = ({ t, id, onPress }: IGItemProps & IGoal) => {
+const GoalItem = ({ t, id, index, onPress }: IGItemProps & IGoal) => {
+    const onPressHandler = useCallback(() => onPress(id), [id]);
+
     return (
-        <MyButton color="main2" style={styles.item} scaleAnimation={3} onPress={() => onPress(id)}>
+        <MyButton
+            color={(index ?? 1) % 2 == 0 ? "main" : "main2"}
+            style={styles.item}
+            scaleAnimation={1}
+            onPress={onPressHandler}>
             {t}
         </MyButton>
     );

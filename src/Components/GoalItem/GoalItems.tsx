@@ -14,7 +14,9 @@ const GoalItems = ({ goals, onPress }: IGItemsProps & IGItemProps) => {
             <FlatList
                 data={goals}
                 keyExtractor={({ id }) => id.toString()}
-                renderItem={({ item }) => <GoalItem {...item} onPress={onPress} />}
+                renderItem={({ item, index }) => (
+                    <GoalItem {...item} index={index} onPress={onPress} />
+                )}
             />
         </View>
     );

@@ -53,7 +53,7 @@ const MyButton = ({
 
         Animated.timing(animation, {
             toValue: 1,
-            duration: 100,
+            duration: 80,
             useNativeDriver: false,
         }).start();
     }, [disabled]);
@@ -63,7 +63,7 @@ const MyButton = ({
 
             Animated.timing(animation, {
                 toValue: 0,
-                duration: 100,
+                duration: 60,
                 useNativeDriver: false,
             }).start(() => {
                 if (!isPressed.current) return;
@@ -77,10 +77,7 @@ const MyButton = ({
         console.log(`Btn ${children}`);
     });
     const onPressHandler = () => {
-        if (!scaleAnimation && onPress) {
-            onPress();
-            return;
-        }
+        if (!scaleAnimation && onPress) return onPress();
 
         isPressed.current = true;
     };
