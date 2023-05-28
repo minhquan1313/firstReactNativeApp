@@ -1,7 +1,7 @@
 import { DfProps } from "@/Types/DfProps";
 import { definedColors } from "@/Utils/definedColors";
 import { memo, useCallback, useEffect, useRef } from "react";
-import { Animated, Pressable, StyleSheet, Text, View } from "react-native";
+import { Animated, GestureResponderEvent, Pressable, StyleSheet, Text, View } from "react-native";
 
 const borderRadius = 8;
 export interface IMyButtonProps extends DfProps {
@@ -9,8 +9,8 @@ export interface IMyButtonProps extends DfProps {
     color?: keyof typeof definedColors;
     colorText?: keyof typeof definedColors;
     sharpCorner?: boolean;
-
-    scaleAnimation?: 1 | 2 | 3 | 4 | 5;
+    disabled?: boolean;
+    scaleAnimation?: 1 | 3 | 5;
 
     onPress?: () => void;
 }
@@ -21,15 +21,17 @@ const MyButton = ({
     colorText,
     style,
     scaleAnimation,
+    disabled,
     children,
     onPress,
 }: IMyButtonProps) => {
+    const isPressed = useRef(false);
     const animation = useRef(new Animated.Value(0)).current;
 
     const opacityAnim = useRef(
         animation.interpolate({
             inputRange: [0, 1],
-            outputRange: [0, 0.2],
+            outputRange: [0, 0.3],
         })
     ).current;
     const scaleAnim = useRef(
@@ -39,39 +41,63 @@ const MyButton = ({
         })
     ).current;
 
-    const overlayEffectAnim = useRef({
+    const overlayEffectAnim = {
         opacity: opacityAnim,
-    }).current;
-    const buttonAnim = useRef({
-        transform: [{ scale: scaleAnim }],
-    }).current;
+    };
+    const buttonAnim = {
+        transform: [{ scale: scaleAnimation ? scaleAnim : 1 }],
+    };
 
     const animStr = useCallback(() => {
+        if (disabled) return;
+
         Animated.timing(animation, {
             toValue: 1,
             duration: 100,
             useNativeDriver: false,
         }).start();
-    }, []);
-    const animEnd = useCallback(() => {
-        Animated.timing(animation, {
-            toValue: 0,
-            duration: 50,
-            useNativeDriver: false,
-        }).start();
-    }, []);
+    }, [disabled]);
+    const animEnd = useCallback(
+        (cb?: (() => void) | GestureResponderEvent) => {
+            if (disabled) return;
+
+            Animated.timing(animation, {
+                toValue: 0,
+                duration: 100,
+                useNativeDriver: false,
+            }).start(() => {
+                if (!isPressed.current) return;
+                typeof cb === "function" && cb();
+            });
+        },
+        [disabled]
+    );
 
     useEffect(() => {
         console.log(`Btn ${children}`);
     });
+    const onPressHandler = () => {
+        if (!scaleAnimation && onPress) {
+            onPress();
+            return;
+        }
+
+        isPressed.current = true;
+    };
 
     return (
-        <Pressable onPressIn={animStr} onPressOut={animEnd} onPress={onPress}>
+        <Pressable
+            onPressIn={animStr}
+            onPressOut={() => animEnd(onPress)}
+            onPress={onPressHandler}
+            disabled={disabled}>
             <Animated.View
                 style={[
                     styles.btn,
                     {
-                        backgroundColor: definedColors[color ?? "main"],
+                        backgroundColor: disabled
+                            ? definedColors["dark"]
+                            : definedColors[color ?? "main"],
                         borderRadius: sharpCorner ? 0 : borderRadius,
                     },
                     style,
@@ -82,9 +108,11 @@ const MyButton = ({
                         <Text
                             style={[
                                 {
-                                    color: definedColors[
-                                        colorText ?? (color === "trans" ? "dark" : "white")
-                                    ],
+                                    color: disabled
+                                        ? definedColors["grey"]
+                                        : definedColors[
+                                              colorText ?? (color === "trans" ? "dark" : "white")
+                                          ],
                                     textAlign: textCenter ? "center" : "auto",
                                 },
                                 styles.text,

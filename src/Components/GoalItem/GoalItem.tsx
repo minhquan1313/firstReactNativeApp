@@ -1,4 +1,4 @@
-import { IGoal } from "@/App";
+import { IGoal } from "App";
 import { memo } from "react";
 import { StyleSheet } from "react-native";
 import MyButton from "../MyButton";
@@ -8,7 +8,7 @@ export interface IGItemProps {
 }
 const GoalItem = ({ t, id, onPress }: IGItemProps & IGoal) => {
     return (
-        <MyButton onPress={() => onPress(id)} color="main2" style={styles.item}>
+        <MyButton color="main2" style={styles.item} scaleAnimation={3} onPress={() => onPress(id)}>
             {t}
         </MyButton>
     );

@@ -12,6 +12,8 @@ export interface IGoal {
     id: number;
 }
 
+const bgColor = definedColors["white"];
+
 export default function App() {
     const [goals, setGoals] = useState<IGoal[]>([]);
     const ID = useRef(0);
@@ -21,22 +23,23 @@ export default function App() {
         []
     );
 
-    const deleteGoal = useCallback(
-        (id: number) => setGoals((g) => g.filter((r) => r.id !== id)),
-        []
-    );
+    const deleteGoal = useCallback((id: number) => {
+        setGoals((g) => g.filter((r) => r.id !== id));
+    }, []);
 
     useEffect(() => {
         if (goals.length) return;
 
-        for (let i = 0; i < 33; i++) {
+        console.log(`Adding samples`);
+
+        for (let i = 0; i < 2; i++) {
             newGoal(`Sample ${i}`);
         }
     }, []);
 
     return (
         <View style={styles.appContainer}>
-            <StatusBar style="auto" backgroundColor={definedColors["grey2"]} />
+            <StatusBar style="auto" />
 
             <Text>
                 deviceName:{Constants.deviceName}# appOwnership:{Constants.appOwnership}# name:
@@ -55,6 +58,6 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingTop: statusBarHeight,
         // paddingBottom: isIPhone ? statusBarHeight : 0,
-        backgroundColor: definedColors["grey2"],
+        backgroundColor: bgColor,
     },
 });
