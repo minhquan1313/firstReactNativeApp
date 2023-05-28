@@ -1,4 +1,4 @@
-import { IGoal } from "@/App";
+import { IGoal } from "App";
 import { memo } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import GoalItem, { IGItemProps } from "./GoalItem";
@@ -27,7 +27,8 @@ const styles = StyleSheet.create({
         flex: 1,
         // backgroundColor: "yellow",
         paddingHorizontal: 20,
-        marginTop: 20,
+        marginTop: 12,
+        marginBottom: 12,
         gap: 12,
     },
     itemsHeader: {

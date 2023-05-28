@@ -1,6 +1,6 @@
-import { isIPhone, statusBarHeight } from "@/Utils/phoneDetect";
+import { bottomSpacing, isIPhone, statusBarHeight } from "@/Utils/phoneDetect";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
-import { Modal, StyleSheet, TextInput, View } from "react-native";
+import { Modal, StyleSheet, Text, TextInput, View } from "react-native";
 import MyButton from "./MyButton";
 
 export interface IGInputProps {
@@ -90,9 +90,11 @@ const styles = StyleSheet.create({
         gap: 12,
     },
     addGoalBtn: {
-        paddingTop: statusBarHeight + (isIPhone ? 12 : 0),
-        paddingBottom: 12,
-        // marginHorizontal: 20,
+        // position: "absolute",
+        paddingTop: 12,
+        // paddingTop: statusBarHeight + (isIPhone ? 12 : 0),
+        paddingBottom: bottomSpacing + 12,
+        // paddingBottom: 12,
     },
 });
 

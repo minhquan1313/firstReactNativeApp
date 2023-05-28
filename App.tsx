@@ -1,7 +1,7 @@
 import GoalInput from "@/Components/GoalInput";
 import GoalItems from "@/Components/GoalItem/GoalItems";
 import { definedColors } from "@/Utils/definedColors";
-import { isIPhone } from "@/Utils/phoneDetect";
+import { statusBarHeight } from "@/Utils/phoneDetect";
 import Constants from "expo-constants";
 import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -36,9 +36,7 @@ export default function App() {
 
     return (
         <View style={styles.appContainer}>
-            <StatusBar style="light" />
-
-            <GoalInput onCreate={newGoal} />
+            <StatusBar style="auto" backgroundColor={definedColors["grey2"]} />
 
             <Text>
                 deviceName:{Constants.deviceName}# appOwnership:{Constants.appOwnership}# name:
@@ -46,14 +44,17 @@ export default function App() {
             </Text>
 
             <GoalItems goals={goals} onPress={deleteGoal} />
+            <GoalInput onCreate={newGoal} />
         </View>
     );
 }
 
 const styles = StyleSheet.create({
     appContainer: {
+        position: "relative",
         flex: 1,
-        paddingBottom: isIPhone ? Constants.statusBarHeight : 0,
+        paddingTop: statusBarHeight,
+        // paddingBottom: isIPhone ? statusBarHeight : 0,
         backgroundColor: definedColors["grey2"],
     },
 });

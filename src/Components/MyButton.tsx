@@ -3,11 +3,14 @@ import { definedColors } from "@/Utils/definedColors";
 import { memo, useCallback, useEffect, useRef } from "react";
 import { Animated, Pressable, StyleSheet, Text, View } from "react-native";
 
+const borderRadius = 8;
 export interface IMyButtonProps extends DfProps {
     textCenter?: boolean;
     color?: keyof typeof definedColors;
     colorText?: keyof typeof definedColors;
     sharpCorner?: boolean;
+
+    scaleAnimation?: 1 | 2 | 3 | 4 | 5;
 
     onPress?: () => void;
 }
@@ -17,10 +20,10 @@ const MyButton = ({
     color,
     colorText,
     style,
+    scaleAnimation,
     children,
     onPress,
 }: IMyButtonProps) => {
-    // const [pressed, setPressed] = useState(false);
     const animation = useRef(new Animated.Value(0)).current;
 
     const opacityAnim = useRef(
@@ -29,13 +32,21 @@ const MyButton = ({
             outputRange: [0, 0.2],
         })
     ).current;
+    const scaleAnim = useRef(
+        animation.interpolate({
+            inputRange: [0, 1],
+            outputRange: [1, scaleAnimation ? 1 - scaleAnimation / 100 : 1],
+        })
+    ).current;
 
-    const overlayEffectAnim = {
+    const overlayEffectAnim = useRef({
         opacity: opacityAnim,
-    };
+    }).current;
+    const buttonAnim = useRef({
+        transform: [{ scale: scaleAnim }],
+    }).current;
 
     const animStr = useCallback(() => {
-        // setPressed(() => true);
         Animated.timing(animation, {
             toValue: 1,
             duration: 100,
@@ -43,10 +54,9 @@ const MyButton = ({
         }).start();
     }, []);
     const animEnd = useCallback(() => {
-        // setPressed(() => false);
         Animated.timing(animation, {
             toValue: 0,
-            duration: 100,
+            duration: 50,
             useNativeDriver: false,
         }).start();
     }, []);
@@ -56,38 +66,38 @@ const MyButton = ({
     });
 
     return (
-        <Pressable
-            onPressIn={animStr}
-            onPressOut={animEnd}
-            onPress={onPress}
-            style={[
-                styles.btn,
-                style,
-                {
-                    backgroundColor: definedColors[color ?? "main"],
-                    borderRadius: sharpCorner ? 0 : 8,
-                },
-            ]}>
-            <View>
-                {typeof children === "string" ? (
-                    <Text
-                        style={[
-                            styles.text,
-                            {
-                                color: definedColors[
-                                    colorText ?? (color === "trans" ? "dark" : "white")
-                                ],
-                                textAlign: textCenter ? "center" : "auto",
-                            },
-                        ]}>
-                        {children}
-                    </Text>
-                ) : (
-                    children
-                )}
-            </View>
+        <Pressable onPressIn={animStr} onPressOut={animEnd} onPress={onPress}>
+            <Animated.View
+                style={[
+                    styles.btn,
+                    {
+                        backgroundColor: definedColors[color ?? "main"],
+                        borderRadius: sharpCorner ? 0 : borderRadius,
+                    },
+                    style,
+                    buttonAnim,
+                ]}>
+                <View>
+                    {typeof children === "string" ? (
+                        <Text
+                            style={[
+                                {
+                                    color: definedColors[
+                                        colorText ?? (color === "trans" ? "dark" : "white")
+                                    ],
+                                    textAlign: textCenter ? "center" : "auto",
+                                },
+                                styles.text,
+                            ]}>
+                            {children}
+                        </Text>
+                    ) : (
+                        children
+                    )}
+                </View>
 
-            <Animated.View style={[styles.overlayEffect, overlayEffectAnim]}></Animated.View>
+                <Animated.View style={[styles.overlayEffect, overlayEffectAnim]}></Animated.View>
+            </Animated.View>
         </Pressable>
     );
 };
