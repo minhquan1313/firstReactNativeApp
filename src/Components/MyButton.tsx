@@ -1,17 +1,17 @@
 import { DfProps } from "@/Types/DfProps";
 import { definedColors } from "@/Utils/definedColors";
-import { memo, useCallback, useEffect, useRef } from "react";
+import { ReactNode, memo, useCallback, useEffect, useRef } from "react";
 import { Animated, GestureResponderEvent, Pressable, StyleSheet, Text, View } from "react-native";
 
 const borderRadius = 8;
-export interface IMyButtonProps extends DfProps {
+export interface IMyButtonProps extends Omit<DfProps, "children"> {
     textCenter?: boolean;
     color?: keyof typeof definedColors;
     colorText?: keyof typeof definedColors;
     sharpCorner?: boolean;
     disabled?: boolean;
     scaleAnimation?: 1 | 3 | 5;
-
+    children: ReactNode;
     onPress?: () => void;
 }
 const MyButton = ({
@@ -101,7 +101,7 @@ const MyButton = ({
                     buttonAnim,
                 ]}>
                 <View>
-                    {typeof children === "string" ? (
+                    {Array.isArray(children) || typeof children !== "object" ? (
                         <Text
                             style={[
                                 {

@@ -7,16 +7,19 @@ export interface IGItemProps {
     index?: number;
     onPress: (id: number) => void;
 }
-const GoalItem = ({ t, id, index, onPress }: IGItemProps & IGoal) => {
+
+// const generateC = (t: string) => {};
+
+const GoalItem = ({ t, id, onPress }: IGItemProps & IGoal) => {
     const onPressHandler = useCallback(() => onPress(id), [id]);
 
     return (
         <MyButton
-            color={(index ?? 1) % 2 == 0 ? "main" : "main2"}
+            color={(id ?? 1) % 2 == 0 ? "main" : "main2"}
             style={styles.item}
             scaleAnimation={1}
             onPress={onPressHandler}>
-            {t}
+            {t} + {id}
         </MyButton>
     );
 };
