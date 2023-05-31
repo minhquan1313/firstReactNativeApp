@@ -73,9 +73,9 @@ const MyButton = ({
         [disabled]
     );
 
-    useEffect(() => {
-        console.log(`Btn ${children}`);
-    });
+    // useEffect(() => {
+    //     console.log(`Btn ${children}`);
+    // });
     const onPressHandler = () => {
         if (!scaleAnimation && onPress) return onPress();
 
@@ -103,6 +103,7 @@ const MyButton = ({
                 <View>
                     {Array.isArray(children) || typeof children !== "object" ? (
                         <Text
+                            numberOfLines={1}
                             style={[
                                 {
                                     color: disabled

@@ -55,31 +55,31 @@ const GoalInput = ({ onCreate }: IGInputProps) => {
             </MyButton>
 
             <Modal visible={isVisible} animationType="slide" presentationStyle="formSheet">
-                {/* <TouchableWithoutFeedback onPress={() => inp.current?.blur()}> */}
-                <KeyboardAvoidingView
-                    behavior={isIPhone ? "padding" : "height"}
-                    style={styles.inputContainer}>
-                    <Image source={crownImg} style={styles.img} />
+                <TouchableWithoutFeedback onPress={() => inp.current?.blur()}>
+                    <KeyboardAvoidingView
+                        behavior={isIPhone ? "padding" : "height"}
+                        style={[styles.inputContainer]}>
+                        <Image source={crownImg} style={styles.img} />
 
-                    <TextInput
-                        placeholder="Course goal"
-                        style={styles.input}
-                        onChangeText={updateTxt}
-                        onSubmitEditing={onAddGoalHandler}
-                        blurOnSubmit
-                        ref={inp}
-                    />
+                        <TextInput
+                            blurOnSubmit
+                            placeholder="Course goal"
+                            style={styles.input}
+                            onChangeText={updateTxt}
+                            onSubmitEditing={onAddGoalHandler}
+                            ref={inp}
+                        />
 
-                    <View style={styles.buttons}>
-                        <MyButton scaleAnimation={5} onPress={onAddGoalHandler}>
-                            Add goal
-                        </MyButton>
-                        <MyButton color="dark" onPress={() => setIsVisible(false)}>
-                            Close
-                        </MyButton>
-                    </View>
-                </KeyboardAvoidingView>
-                {/* </TouchableWithoutFeedback> */}
+                        <View style={styles.buttons}>
+                            <MyButton scaleAnimation={5} onPress={onAddGoalHandler}>
+                                Add goal
+                            </MyButton>
+                            <MyButton color="dark" onPress={() => setIsVisible(false)}>
+                                Close
+                            </MyButton>
+                        </View>
+                    </KeyboardAvoidingView>
+                </TouchableWithoutFeedback>
             </Modal>
         </View>
     );

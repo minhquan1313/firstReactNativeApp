@@ -1,6 +1,7 @@
+import { ReactNode } from "react";
 import { StyleProp, ViewStyle } from "react-native";
 
 export interface DfProps {
-    children?: string | JSX.Element;
+    children?: ReactNode;
     style?: StyleProp<ViewStyle>;
 }
