@@ -1,5 +1,5 @@
 import { IGoal } from "App";
-import { memo, useCallback } from "react";
+import { FC, memo, useCallback } from "react";
 import { StyleSheet } from "react-native";
 import MyButton from "../MyButton";
 
@@ -10,7 +10,7 @@ export interface IGItemProps {
 
 // const generateC = (t: string) => {};
 
-const GoalItem = ({ t, id, onPress }: IGItemProps & IGoal) => {
+const GoalItem: FC<IGItemProps & IGoal> = ({ t, id, onPress }) => {
     const onPressHandler = useCallback(() => onPress(id), [id]);
 
     return (

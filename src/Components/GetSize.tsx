@@ -1,8 +1,8 @@
-import { ForwardRefRenderFunction, memo, useImperativeHandle, useRef } from "react";
+import { ForwardRefRenderFunction, forwardRef, memo, useImperativeHandle, useRef } from "react";
 import { View } from "react-native";
 
 export interface IGetSizeProps {
-    children: JSX.Element;
+    children: JSX.Element | JSX.Element[];
 }
 export interface IGetSizeRefs {
     x: number;
@@ -33,9 +33,13 @@ const GetSize: ForwardRefRenderFunction<IGetSizeRefs, IGetSizeProps> = ({ childr
             data.pageX = pageX;
             data.pageY = pageY;
         });
+
+        console.log({ data });
+
         return data;
     });
+
     return <View ref={view}>{children}</View>;
 };
 
-export default memo(GetSize);
+export default memo(forwardRef(GetSize));

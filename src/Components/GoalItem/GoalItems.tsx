@@ -1,8 +1,8 @@
 import { IGoal } from "App";
 import { memo, useEffect, useRef } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
+import GetSize, { IGetSizeRefs } from "../GetSize";
 import GoalItem, { IGItemProps } from "./GoalItem";
-import { IGetSizeRefs } from "../GetSize";
 
 export interface IGItemsProps {
     goals: IGoal[];
@@ -11,10 +11,11 @@ export interface IGItemsProps {
 const GoalItems = ({ goals, onPress }: IGItemsProps & IGItemProps) => {
     const flatList = useRef<FlatList>(null);
     const ITEM_HEIGHT = useRef(100);
-    const itemRef = useRef<IGetSizeRefs>();
+    const itemRef = useRef<IGetSizeRefs>(null);
 
     useEffect(() => {
-        //
+        console.log(itemRef.current);
+
         if (!goals.length) return;
 
         flatList.current?.scrollToIndex({
@@ -34,7 +35,11 @@ const GoalItems = ({ goals, onPress }: IGItemsProps & IGItemProps) => {
                     index,
                 })}
                 keyExtractor={({ id }) => id.toString()}
-                renderItem={({ item }) => <GoalItem {...item} onPress={onPress} />}
+                renderItem={({ item }) => (
+                    <GetSize ref={itemRef}>
+                        <GoalItem {...item} onPress={onPress} />
+                    </GetSize>
+                )}
                 ref={flatList}
             />
         </View>
