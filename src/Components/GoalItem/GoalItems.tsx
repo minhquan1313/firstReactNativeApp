@@ -2,14 +2,16 @@ import { IGoal } from "App";
 import { memo, useEffect, useRef } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import GoalItem, { IGItemProps } from "./GoalItem";
+import { IGetSizeRefs } from "../GetSize";
 
 export interface IGItemsProps {
     goals: IGoal[];
 }
 
-const ITEM_HEIGHT = 100;
 const GoalItems = ({ goals, onPress }: IGItemsProps & IGItemProps) => {
     const flatList = useRef<FlatList>(null);
+    const ITEM_HEIGHT = useRef(100);
+    const itemRef = useRef<IGetSizeRefs>();
 
     useEffect(() => {
         //
@@ -27,8 +29,8 @@ const GoalItems = ({ goals, onPress }: IGItemsProps & IGItemProps) => {
             <FlatList
                 data={goals}
                 getItemLayout={(data, index) => ({
-                    length: ITEM_HEIGHT,
-                    offset: ITEM_HEIGHT * index,
+                    length: ITEM_HEIGHT.current,
+                    offset: ITEM_HEIGHT.current * index,
                     index,
                 })}
                 keyExtractor={({ id }) => id.toString()}

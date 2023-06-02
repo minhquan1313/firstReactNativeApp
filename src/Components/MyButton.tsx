@@ -1,7 +1,25 @@
 import { DfProps } from "@/Types/DfProps";
 import { definedColors } from "@/Utils/definedColors";
-import { ReactNode, memo, useCallback, useEffect, useRef } from "react";
-import { Animated, GestureResponderEvent, Pressable, StyleSheet, Text, View } from "react-native";
+import { onLayoutGetSize } from "@/Utils/onLayoutGetSize";
+import {
+    ForwardRefRenderFunction,
+    ReactNode,
+    forwardRef,
+    memo,
+    useCallback,
+    useImperativeHandle,
+    useRef,
+} from "react";
+import {
+    Animated,
+    GestureResponderEvent,
+    Pressable,
+    StyleProp,
+    StyleSheet,
+    Text,
+    TextStyle,
+    View,
+} from "react-native";
 
 const borderRadius = 8;
 export interface IMyButtonProps extends Omit<DfProps, "children"> {
@@ -14,19 +32,34 @@ export interface IMyButtonProps extends Omit<DfProps, "children"> {
     children: ReactNode;
     onPress?: () => void;
 }
-const MyButton = ({
-    textCenter,
-    sharpCorner,
-    color,
-    colorText,
-    style,
-    scaleAnimation,
-    disabled,
-    children,
-    onPress,
-}: IMyButtonProps) => {
+export interface IMyButtonRefs {
+    t: string;
+}
+const MyButton: ForwardRefRenderFunction<IMyButtonRefs, IMyButtonProps> = (
+    {
+        textCenter,
+        sharpCorner,
+        color,
+        colorText,
+        style,
+        scaleAnimation,
+        disabled,
+        children,
+        onPress,
+    }: IMyButtonProps,
+    ref
+) => {
     const isPressed = useRef(false);
     const animation = useRef(new Animated.Value(0)).current;
+    const textStyle: StyleProp<TextStyle> = [
+        {
+            color: disabled
+                ? definedColors["grey"]
+                : definedColors[colorText ?? (color === "trans" ? "dark" : "white")],
+            textAlign: textCenter ? "center" : "auto",
+        },
+        styles.text,
+    ];
 
     const opacityAnim = useRef(
         animation.interpolate({
@@ -73,21 +106,22 @@ const MyButton = ({
         [disabled]
     );
 
-    // useEffect(() => {
-    //     console.log(`Btn ${children}`);
-    // });
     const onPressHandler = () => {
         if (!scaleAnimation && onPress) return onPress();
 
         isPressed.current = true;
     };
 
+    useImperativeHandle(ref, () => ({
+        t: "",
+    }));
     return (
         <Pressable
+            disabled={disabled}
             onPressIn={animStr}
             onPressOut={() => animEnd(onPress)}
             onPress={onPressHandler}
-            disabled={disabled}>
+            onLayout={onLayoutGetSize}>
             <Animated.View
                 style={[
                     styles.btn,
@@ -102,19 +136,7 @@ const MyButton = ({
                 ]}>
                 <View>
                     {Array.isArray(children) || typeof children !== "object" ? (
-                        <Text
-                            numberOfLines={1}
-                            style={[
-                                {
-                                    color: disabled
-                                        ? definedColors["grey"]
-                                        : definedColors[
-                                              colorText ?? (color === "trans" ? "dark" : "white")
-                                          ],
-                                    textAlign: textCenter ? "center" : "auto",
-                                },
-                                styles.text,
-                            ]}>
+                        <Text numberOfLines={1} style={textStyle}>
                             {children}
                         </Text>
                     ) : (
@@ -149,4 +171,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default memo(MyButton);
+export default memo(forwardRef(MyButton));
