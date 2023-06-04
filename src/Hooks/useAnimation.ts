@@ -32,7 +32,6 @@ export const useAnimation = (keys: useAnimationParams[]) => {
 
             const start = () =>
                 new Promise<void>((cb) => {
-                    console.log(`start`, { duration });
                     Animated.timing(anim, {
                         toValue: 1,
                         duration,
@@ -42,7 +41,6 @@ export const useAnimation = (keys: useAnimationParams[]) => {
                 });
             const revert = () =>
                 new Promise<void>((cb) => {
-                    console.log(`revert`, { duration });
                     Animated.timing(anim, {
                         toValue: 0,
                         duration,
