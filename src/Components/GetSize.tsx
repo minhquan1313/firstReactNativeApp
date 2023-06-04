@@ -15,9 +15,9 @@ export interface IOnSize {
 }
 
 const GetSize: FC<IGetSizeProps> = ({ t, onSize, children }) => {
-    useEffect(() => {
-        console.log(`Get size`, t);
-    });
+    // useEffect(() => {
+    //     console.log(`Get size`, t);
+    // });
 
     const onLayout = useCallback(
         (r: LayoutChangeEvent) => onSize && onSize(r.nativeEvent.layout),

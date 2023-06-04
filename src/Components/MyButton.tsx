@@ -1,18 +1,9 @@
-import { useAnimation1 } from "@/Hooks/useAnimation";
+import { useAnimation } from "@/Hooks/useAnimation";
 import { DfProps } from "@/Types/DfProps";
 import { definedColors } from "@/Utils/definedColors";
 import { onLayoutGetSize } from "@/Utils/onLayoutGetSize";
 import { FC, ReactNode, memo, useCallback, useRef } from "react";
-import {
-    Animated,
-    GestureResponderEvent,
-    Pressable,
-    StyleProp,
-    StyleSheet,
-    Text,
-    TextStyle,
-    View,
-} from "react-native";
+import { Animated, GestureResponderEvent, Pressable, StyleSheet, Text, View } from "react-native";
 
 const borderRadius = 8;
 export interface IMyButtonProps extends Omit<DfProps, "children"> {
@@ -40,62 +31,24 @@ const MyButton: FC<IMyButtonProps> = ({
     onPress,
 }) => {
     const isPressed = useRef(false);
-    const animation = useRef(new Animated.Value(0)).current;
-    const textStyle: StyleProp<TextStyle> = [
-        {
-            color: disabled
-                ? definedColors["grey"]
-                : definedColors[colorText ?? (color === "trans" ? "dark" : "white")],
-            textAlign: textCenter ? "center" : "auto",
-        },
-        styles.text,
-    ];
 
-    const opacityAnim = useRef(
-        animation.interpolate({
-            inputRange: [0, 1],
-            outputRange: [0, 0.3],
-        })
-    ).current;
-    // const scaleAnim = useRef(
-    //     animation.interpolate({
-    //         inputRange: [0, 1],
-    //         outputRange: [1, scaleAnimationThreshold ? 1 - scaleAnimationThreshold / 100 : 1],
-    //     })
-    // ).current;
-
-    const overlayEffectAnim = {
-        opacity: opacityAnim,
-    };
-    // const overlayEffectAnim2 = useAnimation1({
-    //     keys: (r) => {
-    //         return {
-    //             opacity: r,
-    //             zIndex: r,
-    //         };
-    //     },
-    //     range: [0, 0.3],
-    // });
-    // const scaleAnim1 = useAnimation2({
-    //     key: "transform",
-    //     range: [1, scaleAnimationThreshold ? 1 - scaleAnimationThreshold / 100 : 1],
-    //     customOutput(anim) {
-    //         return [{ scale: scaleAnimationThreshold ? anim : 1 }];
-    //     },
-    // });
-    const scaleAnim = useAnimation1([
+    const scaleAnim = useAnimation([
         {
             key: "transform",
-            range: [1, scaleAnimationThreshold ? 1 - scaleAnimationThreshold / 100 : 1],
+            outRange: [1, scaleAnimationThreshold ? 1 - scaleAnimationThreshold / 100 : 1],
             customOutput(anim) {
                 return [{ scale: scaleAnimationThreshold ? anim : 1 }];
             },
         },
         {
             key: "opacity",
-            range: [0, 0.3],
+            outRange: [0, 0.3],
+            duration: 60,
         },
     ]);
+
+    // console.log(scaleAnim.styles.opacity, overlayEffectAnim);
+
     // scaleAnim2.styles.transform
     // const buttonAnim = {
     //     transform: [{ scale: scaleAnimationThreshold ? scaleAnim : 1 }],
@@ -110,11 +63,14 @@ const MyButton: FC<IMyButtonProps> = ({
         //     useNativeDriver: false,
         // }).start();
     }, [disabled]);
+
     const animEnd = useCallback(
         (cb?: (() => void) | GestureResponderEvent) => {
             if (disabled) return;
 
             scaleAnim.revert(() => {
+                console.log(`callback`);
+
                 if (!isPressed.current) return;
                 typeof cb === "function" && cb();
             });
@@ -158,7 +114,19 @@ const MyButton: FC<IMyButtonProps> = ({
                 ]}>
                 <View>
                     {Array.isArray(children) || typeof children !== "object" ? (
-                        <Text numberOfLines={1} style={textStyle}>
+                        <Text
+                            numberOfLines={1}
+                            style={[
+                                {
+                                    color: disabled
+                                        ? definedColors["grey"]
+                                        : definedColors[
+                                              colorText ?? (color === "trans" ? "dark" : "white")
+                                          ],
+                                    textAlign: textCenter ? "center" : "auto",
+                                },
+                                styles.text,
+                            ]}>
                             {children}
                         </Text>
                     ) : (
@@ -166,7 +134,8 @@ const MyButton: FC<IMyButtonProps> = ({
                     )}
                 </View>
 
-                <Animated.View style={[styles.overlayEffect, overlayEffectAnim]}></Animated.View>
+                <Animated.View
+                    style={[styles.overlayEffect, scaleAnim.styles.opacity]}></Animated.View>
             </Animated.View>
         </Pressable>
     );
