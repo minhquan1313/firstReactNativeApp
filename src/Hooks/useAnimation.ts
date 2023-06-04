@@ -31,28 +31,24 @@ export const useAnimation = (keys: useAnimationParams[]) => {
             };
 
             const start = () =>
-                new Promise<void>((s) => {
+                new Promise<void>((cb) => {
+                    console.log(`start`, { duration });
                     Animated.timing(anim, {
                         toValue: 1,
                         duration,
                         easing,
                         useNativeDriver: !canBeInterrupt,
-                    }).start((r) => {
-                        if (r.finished) s();
-                    });
+                    }).start(() => cb());
                 });
             const revert = () =>
-                new Promise<void>((s) => {
+                new Promise<void>((cb) => {
+                    console.log(`revert`, { duration });
                     Animated.timing(anim, {
                         toValue: 0,
                         duration,
                         easing,
                         useNativeDriver: !canBeInterrupt,
-                    }).start((r) => {
-                        console.log(`revert cb`, r.finished);
-
-                        if (r.finished) s();
-                    });
+                    }).start(() => cb());
                 });
 
             return {
@@ -70,13 +66,11 @@ export const useAnimation = (keys: useAnimationParams[]) => {
 
         return {
             styles,
-            start(cb?: () => void) {
-                console.log(`start`);
-                Promise.all(x.map((r) => r.start())).then(cb);
+            start(onDone?: () => void) {
+                Promise.all(x.map((r) => r.start())).then(onDone);
             },
-            revert(cb?: () => void) {
-                console.log(`revert`);
-                Promise.all(x.map((r) => r.revert())).then(cb);
+            revert(onDone?: () => void) {
+                Promise.all(x.map((r) => r.revert())).then(onDone);
             },
         };
     }, []);

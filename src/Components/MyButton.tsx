@@ -36,32 +36,20 @@ const MyButton: FC<IMyButtonProps> = ({
         {
             key: "transform",
             outRange: [1, scaleAnimationThreshold ? 1 - scaleAnimationThreshold / 100 : 1],
+            duration: 1000,
             customOutput(anim) {
                 return [{ scale: scaleAnimationThreshold ? anim : 1 }];
             },
         },
         {
             key: "opacity",
-            outRange: [0, 0.3],
-            duration: 60,
+            outRange: [0, 0.7],
         },
     ]);
-
-    // console.log(scaleAnim.styles.opacity, overlayEffectAnim);
-
-    // scaleAnim2.styles.transform
-    // const buttonAnim = {
-    //     transform: [{ scale: scaleAnimationThreshold ? scaleAnim : 1 }],
-    // };
 
     const animStr = useCallback(() => {
         if (disabled) return;
         scaleAnim.start();
-        // Animated.timing(animation, {
-        //     toValue: 1,
-        //     duration: 80,
-        //     useNativeDriver: false,
-        // }).start();
     }, [disabled]);
 
     const animEnd = useCallback(
@@ -69,20 +57,9 @@ const MyButton: FC<IMyButtonProps> = ({
             if (disabled) return;
 
             scaleAnim.revert(() => {
-                console.log(`callback`);
-
                 if (!isPressed.current) return;
                 typeof cb === "function" && cb();
             });
-
-            // Animated.timing(animation, {
-            //     toValue: 0,
-            //     duration: 60,
-            //     useNativeDriver: false,
-            // }).start(() => {
-            //     if (!isPressed.current) return;
-            //     typeof cb === "function" && cb();
-            // });
         },
         [disabled]
     );
