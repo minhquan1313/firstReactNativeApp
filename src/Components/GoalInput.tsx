@@ -71,7 +71,7 @@ const GoalInput = ({ onCreate }: IGInputProps) => {
                         />
 
                         <View style={styles.buttons}>
-                            <MyButton scaleAnimation={5} onPress={onAddGoalHandler}>
+                            <MyButton scaleAnimationThreshold={5} onPress={onAddGoalHandler}>
                                 Add goal
                             </MyButton>
                             <MyButton color="dark" onPress={() => setIsVisible(false)}>

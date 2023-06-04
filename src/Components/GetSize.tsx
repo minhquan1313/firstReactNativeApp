@@ -1,45 +1,30 @@
-import { ForwardRefRenderFunction, forwardRef, memo, useImperativeHandle, useRef } from "react";
-import { View } from "react-native";
+import { FC, memo, useCallback, useEffect } from "react";
+import { LayoutChangeEvent, View } from "react-native";
 
 export interface IGetSizeProps {
+    t: string;
+    onSize?: (d: IOnSize) => void;
     children: JSX.Element | JSX.Element[];
 }
-export interface IGetSizeRefs {
+
+export interface IOnSize {
     x: number;
     y: number;
     width: number;
     height: number;
-    pageX: number;
-    pageY: number;
 }
 
-const GetSize: ForwardRefRenderFunction<IGetSizeRefs, IGetSizeProps> = ({ children }, ref) => {
-    const view = useRef<View>(null);
-    const data: IGetSizeRefs = {
-        x: 0,
-        y: 0,
-        width: 0,
-        height: 0,
-        pageX: 0,
-        pageY: 0,
-    };
-
-    useImperativeHandle(ref, () => {
-        view.current?.measure((x, y, width, height, pageX, pageY) => {
-            data.x = x;
-            data.y = y;
-            data.width = width;
-            data.height = height;
-            data.pageX = pageX;
-            data.pageY = pageY;
-        });
-
-        console.log({ data });
-
-        return data;
+const GetSize: FC<IGetSizeProps> = ({ t, onSize, children }) => {
+    useEffect(() => {
+        console.log(`Get size`, t);
     });
 
-    return <View ref={view}>{children}</View>;
+    const onLayout = useCallback(
+        (r: LayoutChangeEvent) => onSize && onSize(r.nativeEvent.layout),
+        [onSize]
+    );
+
+    return <View onLayout={onLayout}>{children}</View>;
 };
 
-export default memo(forwardRef(GetSize));
+export default memo(GetSize);

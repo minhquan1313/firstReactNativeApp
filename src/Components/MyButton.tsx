@@ -1,15 +1,8 @@
+import { useAnimation1 } from "@/Hooks/useAnimation";
 import { DfProps } from "@/Types/DfProps";
 import { definedColors } from "@/Utils/definedColors";
 import { onLayoutGetSize } from "@/Utils/onLayoutGetSize";
-import {
-    ForwardRefRenderFunction,
-    ReactNode,
-    forwardRef,
-    memo,
-    useCallback,
-    useImperativeHandle,
-    useRef,
-} from "react";
+import { FC, ReactNode, memo, useCallback, useRef } from "react";
 import {
     Animated,
     GestureResponderEvent,
@@ -28,27 +21,24 @@ export interface IMyButtonProps extends Omit<DfProps, "children"> {
     colorText?: keyof typeof definedColors;
     sharpCorner?: boolean;
     disabled?: boolean;
-    scaleAnimation?: 1 | 3 | 5;
+    scaleAnimationThreshold?: 1 | 3 | 5;
+    startAnimation?: boolean;
     children: ReactNode;
     onPress?: () => void;
 }
-export interface IMyButtonRefs {
-    t: string;
-}
-const MyButton: ForwardRefRenderFunction<IMyButtonRefs, IMyButtonProps> = (
-    {
-        textCenter,
-        sharpCorner,
-        color,
-        colorText,
-        style,
-        scaleAnimation,
-        disabled,
-        children,
-        onPress,
-    }: IMyButtonProps,
-    ref
-) => {
+
+const MyButton: FC<IMyButtonProps> = ({
+    textCenter,
+    sharpCorner,
+    color,
+    colorText,
+    style,
+    scaleAnimationThreshold,
+    startAnimation,
+    disabled,
+    children,
+    onPress,
+}) => {
     const isPressed = useRef(false);
     const animation = useRef(new Animated.Value(0)).current;
     const textStyle: StyleProp<TextStyle> = [
@@ -67,54 +57,86 @@ const MyButton: ForwardRefRenderFunction<IMyButtonRefs, IMyButtonProps> = (
             outputRange: [0, 0.3],
         })
     ).current;
-    const scaleAnim = useRef(
-        animation.interpolate({
-            inputRange: [0, 1],
-            outputRange: [1, scaleAnimation ? 1 - scaleAnimation / 100 : 1],
-        })
-    ).current;
+    // const scaleAnim = useRef(
+    //     animation.interpolate({
+    //         inputRange: [0, 1],
+    //         outputRange: [1, scaleAnimationThreshold ? 1 - scaleAnimationThreshold / 100 : 1],
+    //     })
+    // ).current;
 
     const overlayEffectAnim = {
         opacity: opacityAnim,
     };
-    const buttonAnim = {
-        transform: [{ scale: scaleAnimation ? scaleAnim : 1 }],
-    };
+    // const overlayEffectAnim2 = useAnimation1({
+    //     keys: (r) => {
+    //         return {
+    //             opacity: r,
+    //             zIndex: r,
+    //         };
+    //     },
+    //     range: [0, 0.3],
+    // });
+    // const scaleAnim1 = useAnimation2({
+    //     key: "transform",
+    //     range: [1, scaleAnimationThreshold ? 1 - scaleAnimationThreshold / 100 : 1],
+    //     customOutput(anim) {
+    //         return [{ scale: scaleAnimationThreshold ? anim : 1 }];
+    //     },
+    // });
+    const scaleAnim = useAnimation1([
+        {
+            key: "transform",
+            range: [1, scaleAnimationThreshold ? 1 - scaleAnimationThreshold / 100 : 1],
+            customOutput(anim) {
+                return [{ scale: scaleAnimationThreshold ? anim : 1 }];
+            },
+        },
+        {
+            key: "opacity",
+            range: [0, 0.3],
+        },
+    ]);
+    // scaleAnim2.styles.transform
+    // const buttonAnim = {
+    //     transform: [{ scale: scaleAnimationThreshold ? scaleAnim : 1 }],
+    // };
 
     const animStr = useCallback(() => {
         if (disabled) return;
-
-        Animated.timing(animation, {
-            toValue: 1,
-            duration: 80,
-            useNativeDriver: false,
-        }).start();
+        scaleAnim.start();
+        // Animated.timing(animation, {
+        //     toValue: 1,
+        //     duration: 80,
+        //     useNativeDriver: false,
+        // }).start();
     }, [disabled]);
     const animEnd = useCallback(
         (cb?: (() => void) | GestureResponderEvent) => {
             if (disabled) return;
 
-            Animated.timing(animation, {
-                toValue: 0,
-                duration: 60,
-                useNativeDriver: false,
-            }).start(() => {
+            scaleAnim.revert(() => {
                 if (!isPressed.current) return;
                 typeof cb === "function" && cb();
             });
+
+            // Animated.timing(animation, {
+            //     toValue: 0,
+            //     duration: 60,
+            //     useNativeDriver: false,
+            // }).start(() => {
+            //     if (!isPressed.current) return;
+            //     typeof cb === "function" && cb();
+            // });
         },
         [disabled]
     );
 
     const onPressHandler = () => {
-        if (!scaleAnimation && onPress) return onPress();
+        if (!scaleAnimationThreshold && onPress) return onPress();
 
         isPressed.current = true;
     };
 
-    useImperativeHandle(ref, () => ({
-        t: "",
-    }));
     return (
         <Pressable
             disabled={disabled}
@@ -132,7 +154,7 @@ const MyButton: ForwardRefRenderFunction<IMyButtonRefs, IMyButtonProps> = (
                         borderRadius: sharpCorner ? 0 : borderRadius,
                     },
                     style,
-                    buttonAnim,
+                    scaleAnim.styles.transform,
                 ]}>
                 <View>
                     {Array.isArray(children) || typeof children !== "object" ? (
@@ -171,4 +193,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default memo(forwardRef(MyButton));
+export default memo(MyButton);

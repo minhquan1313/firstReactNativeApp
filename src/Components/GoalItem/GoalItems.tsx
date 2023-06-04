@@ -1,26 +1,55 @@
 import { IGoal } from "App";
-import { memo, useEffect, useRef } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
-import GetSize, { IGetSizeRefs } from "../GetSize";
+import GetSize, { IOnSize } from "../GetSize";
 import GoalItem, { IGItemProps } from "./GoalItem";
 
 export interface IGItemsProps {
     goals: IGoal[];
+    // ms
 }
 
 const GoalItems = ({ goals, onPress }: IGItemsProps & IGItemProps) => {
+    // const [updated, setUpdated] = useState(false);
     const flatList = useRef<FlatList>(null);
-    const ITEM_HEIGHT = useRef(100);
-    const itemRef = useRef<IGetSizeRefs>(null);
+    const [latestGoal, setLatestGoal] = useState<IGoal>();
+    const [itemHeight, setItemHeight] = useState(-1);
+
+    const onSize = useCallback(({ height }: IOnSize) => {
+        setItemHeight((r) => height);
+    }, []);
 
     useEffect(() => {
-        console.log(itemRef.current);
+        if (!goals.length || itemHeight === -1) return;
 
-        if (!goals.length) return;
+        const index = goals.length - 1;
 
         flatList.current?.scrollToIndex({
-            index: 2,
+            index,
+            animated: true,
         });
+    }, [goals, itemHeight]);
+
+    useEffect(() => {
+        console.log(`GoalItems`, itemHeight);
+    });
+
+    useEffect(() => {
+        // Find latest goal
+
+        let g;
+        if (goals.length) {
+            g = goals[0];
+            const dateG = g.updatedAt.getTime();
+
+            goals.forEach((r) => {
+                const dateR = r.updatedAt.getTime();
+                if (dateG < dateR) g = r;
+            });
+        }
+        setLatestGoal(g);
+
+        console.log(`setLatestGoal`, g);
     }, [goals]);
 
     return (
@@ -29,15 +58,15 @@ const GoalItems = ({ goals, onPress }: IGItemsProps & IGItemProps) => {
 
             <FlatList
                 data={goals}
-                getItemLayout={(data, index) => ({
-                    length: ITEM_HEIGHT.current,
-                    offset: ITEM_HEIGHT.current * index,
+                getItemLayout={(d, index) => ({
+                    length: itemHeight,
+                    offset: itemHeight * index,
                     index,
                 })}
                 keyExtractor={({ id }) => id.toString()}
-                renderItem={({ item }) => (
-                    <GetSize ref={itemRef}>
-                        <GoalItem {...item} onPress={onPress} />
+                renderItem={({ item, index }) => (
+                    <GetSize onSize={onSize} t={item.t}>
+                        <GoalItem {...item} flash={latestGoal?.id === item.id} onPress={onPress} />
                     </GetSize>
                 )}
                 ref={flatList}

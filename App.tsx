@@ -10,6 +10,7 @@ import { StyleSheet, Text, View } from "react-native";
 export interface IGoal {
     t: string;
     id: number;
+    updatedAt: Date;
 }
 
 const bgColor = definedColors["white"];
@@ -18,23 +19,41 @@ export default function App() {
     const [goals, setGoals] = useState<IGoal[]>([]);
     const ID = useRef(0);
 
-    const newGoal = useCallback(
-        (t: string) => setGoals((goals) => [...goals, { t: t, id: ID.current++ }]),
-        []
-    );
+    const newGoal = useCallback((t: string) => {
+        const g = {
+            t: t,
+            id: ID.current++,
+            updatedAt: new Date(),
+        };
+        setGoals((goals) => [...goals, g]);
+    }, []);
 
     const deleteGoal = useCallback((id: number) => {
-        setGoals((g) => g.filter((r) => r.id !== id));
+        setGoals((g) =>
+            g.filter((r, i, arr) => {
+                if (r.id === id) {
+                    if (g.length > 1) {
+                        let index = i;
+                        if (i === 0) index = 1;
+                        else if (i === arr.length - 1) {
+                            index = arr.length - 2;
+                        } else index = i - 1;
+
+                        arr[index].updatedAt = new Date();
+                    }
+                }
+
+                return r.id !== id;
+            })
+        );
     }, []);
 
     useEffect(() => {
+        console.log(`----app`);
+
         if (goals.length) return;
 
-        console.log(`Adding samples`);
-
-        for (let i = 0; i < 22; i++) {
-            newGoal(`Sample ${i}`);
-        }
+        for (let i = 0; i < 22; i++) newGoal(`Sample ${i}`);
     }, []);
 
     return (

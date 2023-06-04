@@ -1,20 +1,23 @@
 import { IGoal } from "App";
-import { FC, memo, useCallback } from "react";
+import { FC, memo, useCallback, useEffect } from "react";
 import { StyleSheet } from "react-native";
 import MyButton from "../MyButton";
 
 export interface IGItemProps {
     index?: number;
+    flash?: boolean;
     onPress: (id: number) => void;
 }
 
-// const generateC = (t: string) => {};
-
-const GoalItem: FC<IGItemProps & IGoal> = ({ t, id, onPress }) => {
+const GoalItem: FC<IGItemProps & IGoal> = ({ flash, t, id, onPress }) => {
     const onPressHandler = useCallback(() => onPress(id), [id]);
 
+    useEffect(() => {
+        if (flash) console.log(`flash`, t, id);
+    });
+
     return (
-        <MyButton style={styles.item} scaleAnimation={1} onPress={onPressHandler}>
+        <MyButton style={styles.item} scaleAnimationThreshold={1} onPress={onPressHandler}>
             {t} + {id}
         </MyButton>
     );
