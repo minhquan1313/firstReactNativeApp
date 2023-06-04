@@ -2,7 +2,7 @@ import { useAnimation } from "@/Hooks/useAnimation";
 import { DfProps } from "@/Types/DfProps";
 import { definedColors } from "@/Utils/definedColors";
 import { onLayoutGetSize } from "@/Utils/onLayoutGetSize";
-import { FC, ReactNode, memo, useCallback, useEffect, useRef } from "react";
+import { FC, ReactNode, memo, useCallback, useEffect, useRef, useState } from "react";
 import { Animated, GestureResponderEvent, Pressable, StyleSheet, Text, View } from "react-native";
 
 const borderRadius = 8;
@@ -31,6 +31,7 @@ const MyButton: FC<IMyButtonProps> = ({
     onPress,
 }) => {
     const isPressed = useRef(false);
+    const [animStarted, setAnimStarted] = useState(false);
 
     const scaleAnim = useAnimation([
         {
@@ -43,7 +44,14 @@ const MyButton: FC<IMyButtonProps> = ({
         },
         {
             key: "opacity",
-            outRange: [0, 0.7],
+            outRange: [0, 0.3],
+        },
+    ]);
+    const startAnim = useAnimation([
+        {
+            key: "opacity",
+            outRange: [0, 0.5],
+            duration: 300,
         },
     ]);
 
@@ -73,6 +81,16 @@ const MyButton: FC<IMyButtonProps> = ({
     useEffect(() => {
         console.log(`Btn + ${children}`);
     });
+    useEffect(() => {
+        if (!startAnimation || animStarted) return;
+
+        (async () => {
+            await startAnim.start();
+            await startAnim.revert();
+            await startAnim.start();
+            await startAnim.revert();
+        })();
+    }, []);
 
     return (
         <Pressable
@@ -116,7 +134,11 @@ const MyButton: FC<IMyButtonProps> = ({
                 </View>
 
                 <Animated.View
-                    style={[styles.overlayEffect, scaleAnim.styles.opacity]}></Animated.View>
+                    style={[
+                        styles.overlayEffect,
+                        scaleAnim.styles.opacity,
+                        startAnim.styles.opacity,
+                    ]}></Animated.View>
             </Animated.View>
         </Pressable>
     );

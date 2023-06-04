@@ -1,4 +1,4 @@
-import { useMemo, useRef } from "react";
+import { useRef } from "react";
 import { Animated, ImageStyle, TextStyle, ViewStyle } from "react-native";
 
 type __STYLE = ViewStyle | TextStyle | ImageStyle;
@@ -72,11 +72,11 @@ export const useAnimation = (keys: useAnimationParams[]) => {
 
     const result = {
         styles,
-        start(onDone?: () => void) {
-            Promise.all(x.map((r) => r.start())).then(onDone);
+        async start(onDone?: () => void) {
+            await Promise.all(x.map((r) => r.start())).then(onDone);
         },
-        revert(onDone?: () => void) {
-            Promise.all(x.map((r) => r.revert())).then(onDone);
+        async revert(onDone?: () => void) {
+            await Promise.all(x.map((r) => r.revert())).then(onDone);
         },
     };
 
