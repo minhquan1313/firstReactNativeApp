@@ -6,7 +6,6 @@ import GoalItem, { IGItemProps } from "./GoalItem";
 
 export interface IGItemsProps {
     goals: IGoal[];
-    // ms
 }
 
 const GoalItems = ({ goals, onPress }: IGItemsProps & IGItemProps) => {
@@ -31,10 +30,6 @@ const GoalItems = ({ goals, onPress }: IGItemsProps & IGItemProps) => {
     }, [goals, itemHeight]);
 
     useEffect(() => {
-        console.log(`GoalItems`, itemHeight);
-    });
-
-    useEffect(() => {
         // Find latest goal
 
         let g;
@@ -47,8 +42,8 @@ const GoalItems = ({ goals, onPress }: IGItemsProps & IGItemProps) => {
                 if (dateG < dateR) g = r;
             });
         }
-        setLatestGoal(g);
 
+        setLatestGoal(g);
         console.log(`setLatestGoal`, g);
     }, [goals]);
 
