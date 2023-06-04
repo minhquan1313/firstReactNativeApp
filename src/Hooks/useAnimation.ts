@@ -24,65 +24,61 @@ export type TUseAnimationStyles = {
 export const useAnimation = (keys: useAnimationParams[]) => {
     const anim = useRef(new Animated.Value(0)).current;
 
-    const duration = useMemo(() => {
-        return keys.find((r) => typeof r.duration === "number")?.duration;
-    }, []);
+    const duration = keys.find((r) => typeof r.duration === "number")?.duration;
 
-    const result = useMemo(() => {
-        const x = keys
-            .map(({ key, outRange, canBeInterrupt, customOutput, easing }) => {
-                const interpolate = anim.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: outRange,
+    const x = keys
+        .map(({ key, outRange, canBeInterrupt, customOutput, easing }) => {
+            const interpolate = anim.interpolate({
+                inputRange: [0, 1],
+                outputRange: outRange,
+            });
+
+            const style = {
+                [key]: customOutput ? customOutput(interpolate) : interpolate,
+            };
+
+            const start = () =>
+                new Promise<void>((cb) => {
+                    Animated.timing(anim, {
+                        toValue: 1,
+                        duration,
+                        easing,
+                        useNativeDriver: !canBeInterrupt,
+                    }).start(() => cb());
+                });
+            const revert = () =>
+                new Promise<void>((cb) => {
+                    Animated.timing(anim, {
+                        toValue: 0,
+                        duration,
+                        easing,
+                        useNativeDriver: !canBeInterrupt,
+                    }).start(() => cb());
                 });
 
-                const style = {
-                    [key]: customOutput ? customOutput(interpolate) : interpolate,
-                };
+            return {
+                style,
+                start,
+                revert,
+            };
+        })
+        .reverse();
 
-                const start = () =>
-                    new Promise<void>((cb) => {
-                        Animated.timing(anim, {
-                            toValue: 1,
-                            duration,
-                            easing,
-                            useNativeDriver: !canBeInterrupt,
-                        }).start(() => cb());
-                    });
-                const revert = () =>
-                    new Promise<void>((cb) => {
-                        Animated.timing(anim, {
-                            toValue: 0,
-                            duration,
-                            easing,
-                            useNativeDriver: !canBeInterrupt,
-                        }).start(() => cb());
-                    });
+    const styles: TUseAnimationStyles = {};
+    x.forEach((r) => {
+        const key = Object.keys(r.style)[0] as keyof __STYLE;
+        styles[key] = { [key]: r.style[key] };
+    });
 
-                return {
-                    style,
-                    start,
-                    revert,
-                };
-            })
-            .reverse();
-
-        const styles: TUseAnimationStyles = {};
-        x.forEach((r) => {
-            const key = Object.keys(r.style)[0] as keyof __STYLE;
-            styles[key] = { [key]: r.style[key] };
-        });
-
-        return {
-            styles,
-            start(onDone?: () => void) {
-                Promise.all(x.map((r) => r.start())).then(onDone);
-            },
-            revert(onDone?: () => void) {
-                Promise.all(x.map((r) => r.revert())).then(onDone);
-            },
-        };
-    }, []);
+    const result = {
+        styles,
+        start(onDone?: () => void) {
+            Promise.all(x.map((r) => r.start())).then(onDone);
+        },
+        revert(onDone?: () => void) {
+            Promise.all(x.map((r) => r.revert())).then(onDone);
+        },
+    };
 
     return result;
 };

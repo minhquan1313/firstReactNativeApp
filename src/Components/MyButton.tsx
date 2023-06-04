@@ -2,7 +2,7 @@ import { useAnimation } from "@/Hooks/useAnimation";
 import { DfProps } from "@/Types/DfProps";
 import { definedColors } from "@/Utils/definedColors";
 import { onLayoutGetSize } from "@/Utils/onLayoutGetSize";
-import { FC, ReactNode, memo, useCallback, useRef } from "react";
+import { FC, ReactNode, memo, useCallback, useEffect, useRef } from "react";
 import { Animated, GestureResponderEvent, Pressable, StyleSheet, Text, View } from "react-native";
 
 const borderRadius = 8;
@@ -12,7 +12,7 @@ export interface IMyButtonProps extends Omit<DfProps, "children"> {
     colorText?: keyof typeof definedColors;
     sharpCorner?: boolean;
     disabled?: boolean;
-    scaleAnimationThreshold?: 1 | 3 | 5;
+    scaleAnimationThreshold?: 1 | 2 | 3 | 4 | 5;
     startAnimation?: boolean;
     children: ReactNode;
     onPress?: () => void;
@@ -69,6 +69,10 @@ const MyButton: FC<IMyButtonProps> = ({
 
         isPressed.current = true;
     };
+
+    useEffect(() => {
+        console.log(`Btn + ${children}`);
+    });
 
     return (
         <Pressable

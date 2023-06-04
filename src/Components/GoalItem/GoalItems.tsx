@@ -9,7 +9,6 @@ export interface IGItemsProps {
 }
 
 const GoalItems = ({ goals, onPress }: IGItemsProps & IGItemProps) => {
-    // const [updated, setUpdated] = useState(false);
     const flatList = useRef<FlatList>(null);
     const [latestGoal, setLatestGoal] = useState<IGoal>();
     const [itemHeight, setItemHeight] = useState(-1);
@@ -59,7 +58,7 @@ const GoalItems = ({ goals, onPress }: IGItemsProps & IGItemProps) => {
                 })}
                 keyExtractor={({ id }) => id.toString()}
                 renderItem={({ item }) => (
-                    <GetSize onSize={onSize} t={item.t}>
+                    <GetSize onSize={onSize}>
                         <GoalItem {...item} flash={latestGoal?.id === item.id} onPress={onPress} />
                     </GetSize>
                 )}

@@ -2,7 +2,6 @@ import { FC, memo, useCallback } from "react";
 import { LayoutChangeEvent, View } from "react-native";
 
 export interface IGetSizeProps {
-    t: string;
     onSize?: (d: IOnSize) => void;
     children: JSX.Element | JSX.Element[];
 }
@@ -14,7 +13,7 @@ export interface IOnSize {
     height: number;
 }
 
-const GetSize: FC<IGetSizeProps> = ({ t, onSize, children }) => {
+const GetSize: FC<IGetSizeProps> = ({ onSize, children }) => {
     const onLayout = useCallback(
         (r: LayoutChangeEvent) => onSize && onSize(r.nativeEvent.layout),
         [onSize]

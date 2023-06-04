@@ -17,7 +17,11 @@ const GoalItem: FC<IGItemProps & IGoal> = ({ flash, t, id, onPress }) => {
     });
 
     return (
-        <MyButton style={styles.item} scaleAnimationThreshold={1} onPress={onPressHandler}>
+        <MyButton
+            style={styles.item}
+            scaleAnimationThreshold={1}
+            onPress={onPressHandler}
+            startAnimation={flash}>
             {t} + {id}
         </MyButton>
     );
