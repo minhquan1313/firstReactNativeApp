@@ -36,7 +36,7 @@ const MyButton: FC<IMyButtonProps> = ({
         {
             key: "transform",
             outRange: [1, scaleAnimationThreshold ? 1 - scaleAnimationThreshold / 100 : 1],
-            duration: 100,
+            duration: 80,
             customOutput(anim) {
                 return [{ scale: scaleAnimationThreshold ? anim : 1 }];
             },

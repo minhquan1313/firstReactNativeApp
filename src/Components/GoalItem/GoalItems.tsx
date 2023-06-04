@@ -15,7 +15,7 @@ const GoalItems = ({ goals, onPress }: IGItemsProps & IGItemProps) => {
     const [itemHeight, setItemHeight] = useState(-1);
 
     const onSize = useCallback(({ height }: IOnSize) => {
-        setItemHeight((r) => height);
+        setItemHeight(() => height);
     }, []);
 
     useEffect(() => {
@@ -25,7 +25,6 @@ const GoalItems = ({ goals, onPress }: IGItemsProps & IGItemProps) => {
 
         flatList.current?.scrollToIndex({
             index,
-            animated: true,
         });
     }, [goals, itemHeight]);
 
@@ -59,7 +58,7 @@ const GoalItems = ({ goals, onPress }: IGItemsProps & IGItemProps) => {
                     index,
                 })}
                 keyExtractor={({ id }) => id.toString()}
-                renderItem={({ item, index }) => (
+                renderItem={({ item }) => (
                     <GetSize onSize={onSize} t={item.t}>
                         <GoalItem {...item} flash={latestGoal?.id === item.id} onPress={onPress} />
                     </GetSize>
